@@ -10,12 +10,12 @@ Require Export Poly.
     claims (_propositions_) and ways of presenting evidence of their
     truth (_proofs_).  In particular, we have worked extensively with
     _equality propositions_ of the form [e1 = e2], with
-    implications ([P -> Q]), and with quantified propositions 
+    implications ([P -> Q]), and with quantified propositions
     ([forall x, P]).
 
     In this chapter we take a deeper look at the way propositions are
     expressed in Coq and at the structure of the logical evidence that
-    we construct when we carry out proofs.  
+    we construct when we carry out proofs.
 
     Some of the concepts in this chapter may seem a bit abstract on a
     first encounter.  We've included a _lot_ of exercises, most of
@@ -35,8 +35,8 @@ Require Export Poly.
     beautiful numbers by giving four rules:
 
        - Rule [b_0]: The number [0] is beautiful.
-       - Rule [b_3]: The number [3] is beautiful. 
-       - Rule [b_5]: The number [5] is beautiful. 
+       - Rule [b_3]: The number [3] is beautiful.
+       - Rule [b_5]: The number [5] is beautiful.
        - Rule [b_sum]: If [n] and [m] are both beautiful, then so is
          their sum. *)
 
@@ -47,16 +47,16 @@ Require Export Poly.
 (**
                               -----------                               (b_0)
                               beautiful 0
-                              
+
                               ------------                              (b_3)
                               beautiful 3
 
                               ------------                              (b_5)
-                              beautiful 5    
+                              beautiful 5
 
                        beautiful n     beautiful m
                        ---------------------------                      (b_sum)
-                              beautiful (n+m)   
+                              beautiful (n+m)
 *)
 
 (** Each of the textual rules above is reformatted here as an
@@ -80,19 +80,19 @@ Require Export Poly.
          ----------- (b_3)   ----------- (b_5)
          beautiful 3         beautiful 5
          ------------------------------- (b_sum)
-                   beautiful 8   
+                   beautiful 8
     Of course, there are other ways of using these rules to argue that
     [8] is beautiful -- for instance:
          ----------- (b_5)   ----------- (b_3)
          beautiful 5         beautiful 3
          ------------------------------- (b_sum)
-                   beautiful 8   
+                   beautiful 8
 *)
 
 (** **** Exercise: 1 star (varieties_of_beauty) *)
 (** How many different ways are there to show that [8] is beautiful? *)
 
-(* FILL IN HERE *)
+(* Infinity. e.g.,(b_sum 0 8 b_0 (b_sum 0 8 b_0 (b_sum 0 8 b_0 (... (b_sum 3 5 b_3 b_5)))...)))) *)
 (** [] *)
 
 (** In Coq, we can express the definition of [beautiful] as
@@ -111,7 +111,7 @@ Inductive beautiful : nat -> Prop :=
     often called a _property_ of numbers.
 
     Each of the remaining lines embodies one of the rules for
-    beautiful numbers. 
+    beautiful numbers.
 
     We can use Coq's tactic scripting facility to assemble proofs that
     particular numbers are beautiful. *)
@@ -142,12 +142,12 @@ Qed.
     to declare new types of _data_, such as numbers and lists.  Does
     this interpretation also make sense for the Inductive definition
     of [beautiful]?  That is, can we view evidence of beauty as some
-    kind of data structure? Yes, we can!  
+    kind of data structure? Yes, we can!
 
     The trick is to introduce an alternative pronunciation of "[:]".
     Instead of "has type," we can also say "is a proof of."  For
     example, the second line in the definition of [beautiful] declares
-    that [b_0 : beautiful 0].  Instead of "[b_0] has type 
+    that [b_0 : beautiful 0].  Instead of "[b_0] has type
     [beautiful 0]," we can say that "[b_0] is a proof of [beautiful 0]."
     Similarly for [b_3] and [b_5].
 
@@ -157,12 +157,12 @@ Qed.
     between the world of logic and the world of computation.
 <<
                  propositions  ~  types
-                 evidence      ~  data 
+                 evidence      ~  data
 >>
     Many useful things follow from this connection.  To begin with, it
     gives us a natural interpretation of the [b_sum] constructor: *)
 (**
-    b_sum : forall n m, 
+    b_sum : forall n m,
             beautiful n -> beautiful m -> beautiful (n+m).
 *)
 (** If we read [:] as "has type," this says that [b_sum] is a data
@@ -176,7 +176,7 @@ Qed.
     expression of type [beautiful 8] by applying [b_sum] to
     appropriate arguments.  Indeed, we can: *)
 
-Check (b_sum 3 5 b_3 b_5).  
+Check (b_sum 3 5 b_3 b_5).
 
 (** The expression [b_sum 3 5 b_3 b_5] can be thought of as
     instantiating the parameterized constructor [b_sum] with the
@@ -185,8 +185,8 @@ Check (b_sum 3 5 b_3 b_5).
     to figure out that 3+5=8).  Alternatively, we can think of [b_sum]
     as a primitive "evidence constructor" that, when applied to two
     particular numbers, wants to be further applied to evidence that
-    those two numbers are beautiful; its type, 
-[[  
+    those two numbers are beautiful; its type,
+[[
     forall n m, beautiful n -> beautiful m -> beautiful (n+m),
     expresses this functionality, in the same way that the polymorphic
     type [forall X, list X] in the previous chapter expressed the fact
@@ -210,7 +210,7 @@ Qed.
 (* ##################################################### *)
 (** ** Proof Scripts and Proof Objects *)
 
-(** These proof objects lie at the core of how Coq operates. 
+(** These proof objects lie at the core of how Coq operates.
 
     When Coq is following a proof script, what is happening internally
     is that it is gradually constructing a proof object -- a term
@@ -236,7 +236,7 @@ Qed.
     output, lines of the form [?1 -> beautiful n] record these
     requirements.  (The [->] here has nothing to do with either
     implication or function types -- it is just an unfortunate choice
-    of concrete syntax for the output!)  
+    of concrete syntax for the output!)
 
     Each of the holes corresponds to a subgoal, and the proof is
     finished when there are no more subgoals.  At this point, the
@@ -271,10 +271,11 @@ Print eight_is_beautiful'''.
 Theorem six_is_beautiful :
   beautiful 6.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply (b_sum 3 3 b_3 b_3).
+Qed.
 
 Definition six_is_beautiful' : beautiful 6 :=
-  (* FILL IN HERE *) admit.
+  b_sum 3 3 b_3 b_3.
 (** [] *)
 
 (** **** Exercise: 1 star (nine_is_beautiful) *)
@@ -283,10 +284,11 @@ Definition six_is_beautiful' : beautiful 6 :=
 Theorem nine_is_beautiful :
   beautiful 9.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply (b_sum 3 6 b_3 six_is_beautiful).
+Qed.
 
 Definition nine_is_beautiful' : beautiful 9 :=
-  (* FILL IN HERE *) admit.
+  b_sum 3 6 b_3 six_is_beautiful.
 (** [] *)
 
 
@@ -311,16 +313,16 @@ Proof.
    apply H.
 Qed.
 
-(** What is the proof object corresponding to [b_plus3]? 
+(** What is the proof object corresponding to [b_plus3]?
 
     We've made a notational pun between [->] as implication and [->]
     as the type of functions.  If we take this pun seriously, then
-    what we're looking for is an expression whose _type_ is 
+    what we're looking for is an expression whose _type_ is
     [forall n, beautiful n -> beautiful (3+n)] -- that is, a
     _function_ that takes two arguments (one number and a piece of
     evidence) and returns a piece of evidence!  Here it is: *)
 
-Definition b_plus3' : forall n, beautiful n -> beautiful (3+n) := 
+Definition b_plus3' : forall n, beautiful n -> beautiful (3+n) :=
   fun n => fun H : beautiful n =>
     b_sum 3 n b_3 H.
 Check b_plus3'.
@@ -329,7 +331,7 @@ Check b_plus3'.
 (** Recall that [fun n => blah] means "the function that, given [n],
     yields [blah]."  Another equivalent way to write this definition is: *)
 
-Definition b_plus3'' (n : nat) (H : beautiful n) : beautiful (3+n) := 
+Definition b_plus3'' (n : nat) (H : beautiful n) : beautiful (3+n) :=
   b_sum 3 n b_3 H.
 Check b_plus3''.
 (* ===> b_plus3'' : forall n, beautiful n -> beautiful (3+n) *)
@@ -337,19 +339,42 @@ Check b_plus3''.
 (** **** Exercise: 2 stars (b_times2) *)
 Theorem b_times2: forall n, beautiful n -> beautiful (2*n).
 Proof.
-    (* FILL IN HERE *) Admitted.
+  intros.
+  simpl.
+  rewrite -> plus_0_r.
+  apply (b_sum n n H H).
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (b_times2') *)
 (** Write a proof object corresponding to [b_times2] above *)
 
 Definition b_times2': forall n, beautiful n -> beautiful (2*n) :=
-  (* FILL IN HERE *) admit.
+  fun n (H : beautiful n) => b_sum n (n + 0) H (b_sum n 0 H b_0).
 
 (** **** Exercise: 2 stars (b_timesm) *)
 Theorem b_timesm: forall n m, beautiful n -> beautiful (m*n).
 Proof.
-   (* FILL IN HERE *) Admitted.
+  intros.
+  induction H.
+  rewrite -> mult_0_r.
+  apply b_0.
+  induction m.
+  simpl.
+  apply b_0.
+  simpl.
+  apply (b_sum 3 (m * 3) b_3 IHm).
+  induction m.
+  apply b_0.
+  apply (b_sum 5 (m * 5) b_5 IHm).
+  rewrite -> mult_comm.
+  rewrite -> mult_plus_distr_r.
+  apply b_sum.
+  rewrite -> mult_comm.
+  apply IHbeautiful1.
+  rewrite -> mult_comm.
+  apply IHbeautiful2.
+Qed.
 (** [] *)
 
 (* ####################################################### *)
@@ -375,7 +400,7 @@ Proof.
     is [b_sum n1 n2 E1 E2] (and [n] is [(n1+n2)], and [E1] is evidence
     that [n1] is beauiful and [E2] is evidence that [n2] is
     beautiful). *)
-    
+
 (** Thus, it makes sense to use the tactics that we have already seen
     for inductively defined _data_ to reason instead about inductively
     defined _evidence_.
@@ -391,8 +416,18 @@ Inductive gorgeous : nat -> Prop :=
 (** **** Exercise: 1 star (gorgeous_tree) *)
 (** Write out the definition of gorgeous numbers using the _inference
     rule_ notation.
- 
-(* FILL IN HERE *)
+
+                           ----------                               (g_0)
+                           gorgeous 0
+
+                           gorgeous n
+                         --------------                             (g_plus3)
+                         gorgeous (3+n)
+
+                           gorgeous n
+                         --------------                             (g_plus5)
+                         gorgeous (5+n)
+
 []
 *)
 
@@ -401,25 +436,25 @@ Inductive gorgeous : nat -> Prop :=
     actually the same property in the sense that they are true of the
     same numbers.  Indeed, we can prove this. *)
 
-Theorem gorgeous__beautiful : forall n, 
+Theorem gorgeous__beautiful : forall n,
   gorgeous n -> beautiful n.
 Proof.
    intros.
-   (* The argument proceeds by induction on the evidence H! *) 
+   (* The argument proceeds by induction on the evidence H! *)
    induction H as [|n'|n'].
    Case "g_0".
        apply b_0.
-   Case "g_plus3". 
+   Case "g_plus3".
        apply b_sum. apply b_3.
        apply IHgorgeous.
    Case "g_plus5".
-       apply b_sum. apply b_5. apply IHgorgeous. 
+       apply b_sum. apply b_5. apply IHgorgeous.
 Qed.
 
 (** Let's see what happens if we try to prove this by induction on [n]
    instead of induction on the evidence [H]. *)
 
-Theorem gorgeous__beautiful_FAILED : forall n, 
+Theorem gorgeous__beautiful_FAILED : forall n,
   gorgeous n -> beautiful n.
 Proof.
    intros. induction n as [| n'].
@@ -429,30 +464,45 @@ Admitted.
 
 
 (** **** Exercise: 1 star (gorgeous_plus13) *)
-Theorem gorgeous_plus13: forall n, 
+Theorem gorgeous_plus13: forall n,
   gorgeous n -> gorgeous (13+n).
 Proof.
-   (* FILL IN HERE *) Admitted.
+  intros.
+  apply (g_plus5 (8 + n) (g_plus5 (3 + n) (g_plus3 n H))).
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (gorgeous_plus13_po):
 Give the proof object for theorem [gorgeous_plus13] above. *)
 
 Definition gorgeous_plus13_po: forall n, gorgeous n -> gorgeous (13+n):=
-   (* FILL IN HERE *) admit.
+  fun n (H : gorgeous n) => g_plus5 (8 + n) (g_plus5 (3 + n) (g_plus3 n H)).
 (** [] *)
 
 (** **** Exercise: 2 stars (gorgeous_sum) *)
 Theorem gorgeous_sum : forall n m,
   gorgeous n -> gorgeous m -> gorgeous (n + m).
 Proof.
- (* FILL IN HERE *) Admitted.
+  intros.
+  induction H.
+  apply H0.
+  apply (g_plus3 (n + m) IHgorgeous).
+  apply (g_plus5 (n + m) IHgorgeous).
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars (beautiful__gorgeous) *)
 Theorem beautiful__gorgeous : forall n, beautiful n -> gorgeous n.
 Proof.
- (* FILL IN HERE *) Admitted.
+  intros.
+  induction H.
+  apply g_0.
+  apply (g_plus3 0 g_0).
+  apply (g_plus5 0 g_0).
+  apply gorgeous_sum.
+  apply IHbeautiful1.
+  apply IHbeautiful2.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (b_times2) *)
@@ -461,13 +511,28 @@ Proof.
 
 Lemma helper_g_times2 : forall x y z, x + (z + y)= z + x + y.
 Proof.
-   (* FILL IN HERE *) Admitted.
+  intros.
+  rewrite -> plus_assoc.
+  replace (x + z) with (z + x).
+  reflexivity.
+  rewrite -> plus_comm.
+  reflexivity.
+Qed.
 
 Theorem g_times2: forall n, gorgeous n -> gorgeous (2*n).
 Proof.
-   intros n H. simpl. 
+   intros n H. simpl.
    induction H.
-   (* FILL IN HERE *) Admitted.
+   apply g_0.
+   apply gorgeous_sum.
+   apply (g_plus3 n H).
+   rewrite -> plus_0_r.
+   apply (g_plus3 n H).
+   apply gorgeous_sum.
+   apply (g_plus5 n H).
+   rewrite -> plus_0_r.
+   apply (g_plus5 n H).
+Qed.
 (** [] *)
 
 
@@ -478,7 +543,7 @@ Proof.
     for evenness, yielding [true] if so.  This gives us an obvious way
     of defining the _concept_ of evenness: *)
 
-Definition even (n:nat) : Prop := 
+Definition even (n:nat) : Prop :=
   evenb n = true.
 
 (** That is, we can define "[n] is even" to mean "the function
@@ -506,7 +571,13 @@ Inductive ev : nat -> Prop :=
 Theorem double_even : forall n,
   ev (double n).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  induction n.
+  apply ev_0.
+  simpl.
+  apply ev_SS.
+  apply IHn.
+Qed.
 (** [] *)
 
 (** **** Exercise: 4 stars, optional (double_even_pfobj) *)
@@ -527,7 +598,7 @@ Proof.
 
     However, for many other properties of interest, the direct
     inductive definition is preferable, since writing a testing
-    function may be awkward or even impossible.  
+    function may be awkward or even impossible.
 
     One such property is [beautiful].  This is a perfectly sensible
     definition of a set of numbers, but we cannot translate its
@@ -554,15 +625,27 @@ Proof.
     evidence. *)
 
 Theorem ev_minus2: forall n,
-  ev n -> ev (pred (pred n)). 
+  ev n -> ev (pred (pred n)).
 Proof.
   intros n E.
   destruct E as [| n' E'].
-  Case "E = ev_0". simpl. apply ev_0. 
+  Case "E = ev_0". simpl. apply ev_0.
   Case "E = ev_SS n' E'". simpl. apply E'.  Qed.
 
 (** **** Exercise: 1 star, optional (ev_minus2_n) *)
 (** What happens if we try to [destruct] on [n] instead of [E]? *)
+Theorem ev_minus2'': forall n,
+  ev n -> ev (pred (pred n)).
+Proof.
+  intros n E.
+  destruct n.
+  simpl.
+  apply E.
+  simpl.
+  destruct (pred n).
+  apply ev_0.
+Admitted.
+(* OMIT *)
 (** [] *)
 
 (** **** Exercise: 1 star, recommended (ev__even) *)
@@ -573,15 +656,24 @@ Theorem ev__even : forall n,
   ev n -> even n.
 Proof.
   intros n E. induction E as [| n' E'].
-  Case "E = ev_0". 
+  Case "E = ev_0".
     unfold even. reflexivity.
-  Case "E = ev_SS n' E'".  
-    unfold even. apply IHE'.  
+  Case "E = ev_SS n' E'".
+    unfold even. apply IHE'.
 Qed.
 (** Could this proof also be carried out by induction on [n] instead
     of [E]?  If not, why not? *)
-
+Theorem ev__even' : forall n,
+  ev n -> even n.
+Proof.
+  intros n E.
+  induction n.
+  unfold even.
+  simpl.
+  reflexivity.
+Admitted.
 (* FILL IN HERE *)
+(* OMIT *)
 (** [] *)
 
 (** The induction principle for inductively defined propositions does
@@ -602,8 +694,9 @@ Qed.
          Case "S".
            ...
    Briefly explain why.
- 
+
 (* FILL IN HERE *)
+(* OMIT *)
 *)
 (** [] *)
 
@@ -612,8 +705,14 @@ Qed.
 
 Theorem ev_sum : forall n m,
    ev n -> ev m -> ev (n+m).
-Proof. 
-  (* FILL IN HERE *) Admitted.
+Proof.
+  intros.
+  induction H.
+  apply H0.
+  simpl.
+  apply ev_SS.
+  apply IHev.
+Qed.
 (** [] *)
 
 (** Here's another situation where we want to analyze evidence for
@@ -623,7 +722,7 @@ Proof.
 Theorem SSev_ev_firsttry : forall n,
   ev (S (S n)) -> ev n.
 Proof.
-  intros n E. 
+  intros n E.
   destruct E as [| n' E'].
   (* Stuck: [destruct] gives us un-provable subgoal here! *)
 Admitted.
@@ -681,15 +780,22 @@ Proof.
 Theorem SSSSev__even : forall n,
   ev (S (S (S (S n)))) -> ev n.
 Proof.
-  (* FILL IN HERE *) Admitted.
-
+  intros.
+  inversion H.
+  inversion H1.
+  apply H3.
+Qed.
 (** The [inversion] tactic can also be used to derive goals by showing
     the absurdity of a hypothesis. *)
 
-Theorem even5_nonsense : 
+Theorem even5_nonsense :
   ev 5 -> 2 + 2 = 9.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  inversion H.
+  inversion H1.
+  inversion H3.
+Qed.
 (** [] *)
 
 (** We can generally use [inversion] on inductive propositions.
@@ -699,10 +805,10 @@ Proof.
     hypotheses. *)
 
 Theorem ev_minus2': forall n,
-  ev n -> ev (pred (pred n)). 
+  ev n -> ev (pred (pred n)).
 Proof.
-  intros n E. inversion E as [| n' E']. 
-  Case "E = ev_0". simpl. apply ev_0. 
+  intros n E. inversion E as [| n' E'].
+  Case "E = ev_0". simpl. apply ev_0.
   Case "E = ev_SS n' E'". simpl. apply E'.  Qed.
 
 (** **** Exercise: 3 stars, recommended (ev_ev__ev) *)
@@ -712,7 +818,15 @@ Proof.
 Theorem ev_ev__ev : forall n m,
   ev (n+m) -> ev n -> ev m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  induction H0.
+  simpl in H.
+  apply H.
+  simpl in H.
+  apply IHev.
+  inversion H.
+  apply H2.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (ev_plus_plus) *)
@@ -724,7 +838,17 @@ Proof.
 Theorem ev_plus_plus : forall n m p,
   ev (n+m) -> ev (n+p) -> ev (m+p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  apply (ev_sum (n + m) (n + p)) in H.
+  rewrite -> plus_swap in H.
+  rewrite <- plus_assoc in H.
+  rewrite plus_assoc in H.
+  apply (ev_ev__ev (n + n) (m + p)) in H.
+  apply H.
+  rewrite <- double_plus.
+  apply double_even.
+  apply H0.
+Qed.
 (** [] *)
 
 (* ##################################################### *)
@@ -761,7 +885,7 @@ Check (beautiful 4).
 (** We've seen one way that propositions can be used in Coq: in
     [Theorem] (and [Lemma] and [Example]) declarations. *)
 
-Theorem plus_2_2_is_4 : 
+Theorem plus_2_2_is_4 :
   2 + 2 = 4.
 Proof. reflexivity.  Qed.
 
@@ -778,7 +902,7 @@ Check plus_fact.
     expected -- for example, as the claim in a [Theorem]
     declaration. *)
 
-Theorem plus_fact_is_true : 
+Theorem plus_fact_is_true :
   plus_fact.
 Proof. reflexivity.  Qed.
 
@@ -800,7 +924,7 @@ Definition strange_prop2 :=
 (** We can also define _parameterized propositions_, such as
     the property of being even. *)
 
-Check even. 
+Check even.
 (* ===> even : nat -> Prop *)
 Check (even 4).
 (* ===> even 4 : Prop *)
@@ -860,7 +984,7 @@ Definition preserved_by_S (P:nat->Prop) : Prop :=
     the one for natural numbers: *)
 
 Check nat_ind.
-(*  ===> nat_ind : 
+(*  ===> nat_ind :
            forall P : nat -> Prop,
               P 0  ->
               (forall n : nat, P n -> P (S n))  ->
@@ -873,12 +997,12 @@ Check nat_ind.
     proofs.  Here, for example, is an alternate proof of a theorem
     that we saw in the [Basics] chapter. *)
 
-Theorem mult_0_r' : forall n:nat, 
+Theorem mult_0_r' : forall n:nat,
   n * 0 = 0.
 Proof.
-  apply nat_ind. 
+  apply nat_ind.
   Case "O". reflexivity.
-  Case "S". simpl. intros n IHn. rewrite -> IHn. 
+  Case "S". simpl. intros n IHn. rewrite -> IHn.
     reflexivity.  Qed.
 
 (** This proof is basically the same as the earlier one, but a
@@ -912,10 +1036,16 @@ Proof.
 (** Complete this proof as we did [mult_0_r'] above, without using
     the [induction] tactic. *)
 
-Theorem plus_one_r' : forall n:nat, 
+Theorem plus_one_r' : forall n:nat,
   n + 1 = S n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply nat_ind.
+  reflexivity.
+  intros.
+  simpl.
+  rewrite -> H.
+  reflexivity.
+Qed.
 (** [] *)
 
 (** The induction principles that Coq generates for other datatypes
@@ -938,8 +1068,8 @@ Inductive yesno : Type :=
   | yes : yesno
   | no : yesno.
 
-Check yesno_ind. 
-(* ===> yesno_ind : forall P : yesno -> Prop, 
+Check yesno_ind.
+(* ===> yesno_ind : forall P : yesno -> Prop,
                       P yes  ->
                       P no  ->
                       forall y : yesno, P y *)
@@ -954,6 +1084,10 @@ Inductive rgb : Type :=
   | green : rgb
   | blue : rgb.
 Check rgb_ind.
+(*
+rgb_ind : forall P : rgb -> Prop,
+  P red -> P green -> P blue -> forall r : rgb, P r.
+ *)
 (** [] *)
 
 (** Here's another example, this time with one of the constructors
@@ -980,6 +1114,10 @@ Inductive natlist1 : Type :=
   | nsnoc1 : natlist1 -> nat -> natlist1.
 
 (** Now what will the induction principle look like? *)
+(*
+natlist1_ind : forall P : natlist -> Prop,
+  P nnil1 -> (forall (l : natlist1) (n : nat), P l -> P (nsnoc1 l n)) -> forall n : natlist1, P n.
+ *)
 (** [] *)
 
 (** From these examples, we can extract this general rule:
@@ -1006,8 +1144,10 @@ Inductive natlist1 : Type :=
     Give an [Inductive] definition of [ExSet]: *)
 
 Inductive ExSet : Type :=
-  (* FILL IN HERE *)
-.
+  | con1 : bool -> ExSet
+  | con2 : nat -> ExSet -> ExSet.
+
+Check ExSet_ind.
 (** [] *)
 
 (** What about polymorphic datatypes?
@@ -1042,6 +1182,12 @@ Inductive tree (X:Type) : Type :=
   | leaf : X -> tree X
   | node : tree X -> tree X -> tree X.
 Check tree_ind.
+(*
+tree_ind : forall (X : Type) (P : tree X -> Prop),
+  (forall (x : X), P (leaf X x)) ->
+  (forall (t : tree X), P t -> forall (t0 : tree X), P t0 -> P (node X t t0)) ->
+  forall t : tree X, P t.
+ *)
 (** [] *)
 
 (** **** Exercise: 1 star (mytype) *)
@@ -1051,10 +1197,16 @@ Check tree_ind.
         forall (X : Type) (P : mytype X -> Prop),
             (forall x : X, P (constr1 X x)) ->
             (forall n : nat, P (constr2 X n)) ->
-            (forall m : mytype X, P m -> 
+            (forall m : mytype X, P m ->
                forall n : nat, P (constr3 X m n)) ->
-            forall m : mytype X, P m                   
-*) 
+            forall m : mytype X, P m
+*)
+Inductive mytype (X : Type) : Type :=
+  | constr1 : X -> mytype X
+  | constr2 : nat -> mytype X
+  | constr3 : mytype X -> nat -> mytype X.
+
+Check mytype_ind.
 (** [] *)
 
 (** **** Exercise: 1 star, optional (foo) *)
@@ -1066,8 +1218,13 @@ Check tree_ind.
              (forall y : Y, P (baz X Y y)) ->
              (forall f1 : nat -> foo X Y,
                (forall n : nat, P (f1 n)) -> P (quux X Y f1)) ->
-             forall f2 : foo X Y, P f2       
-*) 
+             forall f2 : foo X Y, P f2
+*)
+Inductive foo (X Y : Type) : Type :=
+  | bar : X -> foo X Y
+  | baz : Y -> foo X Y
+  | quux : (nat -> foo X Y) -> foo X Y.
+Check foo_ind.
 (** [] *)
 
 (** **** Exercise: 1 star, optional (foo') *)
@@ -1082,12 +1239,12 @@ Inductive foo' (X:Type) : Type :=
      foo'_ind :
         forall (X : Type) (P : foo' X -> Prop),
               (forall (l : list X) (f : foo' X),
-                    _______________________ -> 
-                    _______________________   ) ->
-             ___________________________________________ ->
-             forall f : foo' X, ________________________
+                    P f ->
+                    P (C1 X l f)   ) ->
+             P (C2 X) ->
+             forall f : foo' X, P f.
 *)
-
+Check foo'_ind.
 (** [] *)
 
 (* ##################################################### *)
@@ -1111,25 +1268,25 @@ Inductive foo' (X:Type) : Type :=
    "[forall n, n * 0 = 0]," we can write it as "[forall n, P_m0r
    n]", where [P_m0r] is defined as... *)
 
-Definition P_m0r (n:nat) : Prop := 
+Definition P_m0r (n:nat) : Prop :=
   n * 0 = 0.
 
 (** ... or equivalently... *)
 
-Definition P_m0r' : nat->Prop := 
+Definition P_m0r' : nat->Prop :=
   fun n => n * 0 = 0.
 
 (** Now when we do the proof it is easier to see where [P_m0r]
     appears. *)
 
-Theorem mult_0_r'' : forall n:nat, 
+Theorem mult_0_r'' : forall n:nat,
   P_m0r n.
 Proof.
   apply nat_ind.
   Case "n = O". reflexivity.
-  Case "n = S n'". 
+  Case "n = S n'".
     (* Note the proof state at this point! *)
-    unfold P_m0r. simpl. intros n' IHn'. 
+    unfold P_m0r. simpl. intros n' IHn'.
     apply IHn'.  Qed.
 
 (** This extra naming step isn't something that we'll do in
@@ -1184,9 +1341,9 @@ Proof.
     gorgeous_ind_max :
        forall P : (forall n : nat, gorgeous n -> Prop),
             P O g_0 ->
-            (forall (m : nat) (e : gorgeous m), 
+            (forall (m : nat) (e : gorgeous m),
                P m e -> P (3+m) (g_plus3 m e) ->
-            (forall (m : nat) (e : gorgeous m), 
+            (forall (m : nat) (e : gorgeous m),
                P m e -> P (5+m) (g_plus5 m e) ->
             forall (n : nat) (e : gorgeous n), P n e
     ... because:
@@ -1252,9 +1409,9 @@ Check gorgeous_ind.
     - Suppose, [P] is a property of natural numbers (that is, [P n] is
       a [Prop] for every [n]).  To show that [P n] holds whenever [n]
       is gorgeous, it suffices to show:
-  
+
       - [P] holds for [0],
-  
+
       - for any [n], if [n] is gorgeous and [P] holds for
         [n], then [P] holds for [3+n],
 
@@ -1292,9 +1449,10 @@ Inductive p : (tree nat) -> nat -> Prop :=
    | c3 : forall t n, p t n -> p t (S n).
 
 (** Describe, in English, the conditions under which the
-   proposition [p t n] is provable. 
+   proposition [p t n] is provable.
 
    (* FILL IN HERE *)
+ (* OMIT *)
 *)
 (** [] *)
 
@@ -1324,23 +1482,23 @@ End P.
     example, in the proof above that [plus] is associative...
 *)
 
-Theorem plus_assoc' : forall n m p : nat, 
-  n + (m + p) = (n + m) + p.   
+Theorem plus_assoc' : forall n m p : nat,
+  n + (m + p) = (n + m) + p.
 Proof.
   (* ...we first introduce all 3 variables into the context,
      which amounts to saying "Consider an arbitrary [n], [m], and
      [p]..." *)
-  intros n m p. 
+  intros n m p.
   (* ...We now use the [induction] tactic to prove [P n] (that
      is, [n + (m + p) = (n + m) + p]) for _all_ [n],
      and hence also for the particular [n] that is in the context
      at the moment. *)
   induction n as [| n'].
   Case "n = O". reflexivity.
-  Case "n = S n'". 
+  Case "n = S n'".
     (* In the second subgoal generated by [induction] -- the
-       "inductive step" -- we must prove that [P n'] implies 
-       [P (S n')] for all [n'].  The [induction] tactic 
+       "inductive step" -- we must prove that [P n'] implies
+       [P (S n')] for all [n'].  The [induction] tactic
        automatically introduces [n'] and [P n'] into the context
        for us, leaving just [P (S n')] as the goal. *)
     simpl. rewrite -> IHn'. reflexivity.  Qed.
@@ -1348,12 +1506,12 @@ Proof.
 (** It also works to apply [induction] to a variable that is
    quantified in the goal. *)
 
-Theorem plus_comm' : forall n m : nat, 
+Theorem plus_comm' : forall n m : nat,
   n + m = m + n.
 Proof.
-  induction n as [| n']. 
+  induction n as [| n'].
   Case "n = O". intros m. rewrite -> plus_0_r. reflexivity.
-  Case "n = S n'". intros m. simpl. rewrite -> IHn'. 
+  Case "n = S n'". intros m. simpl. rewrite -> IHn'.
     rewrite <- plus_n_Sm. reflexivity.  Qed.
 
 (** Note that [induction n] leaves [m] still bound in the goal --
@@ -1365,11 +1523,11 @@ Proof.
     automatically introduce the variables bound by these quantifiers
     into the context. *)
 
-Theorem plus_comm'' : forall n m : nat, 
+Theorem plus_comm'' : forall n m : nat,
   n + m = m + n.
 Proof.
   (* Let's do induction on [m] this time, instead of [n]... *)
-  induction m as [| m']. 
+  induction m as [| m'].
   Case "m = O". simpl. rewrite -> plus_0_r. reflexivity.
   Case "m = S m'". simpl. rewrite <- IHm'.
     rewrite <- plus_n_Sm. reflexivity.  Qed.
@@ -1381,11 +1539,37 @@ Proof.
     induction, and state the theorem and proof in terms of this
     defined proposition.  *)
 
-(* FILL IN HERE *)
+Definition plus_assoc_def (n m p : nat) : Prop := n + (m + p) = (n + m) + p.
+Definition plus_comm_def (n m : nat) : Prop := n + m = m + n.
+
+Theorem plus_assoc''' : forall n m p, plus_assoc_def n m p.
+Proof.
+  intros.
+  induction n.
+  reflexivity.
+  unfold plus_assoc_def.
+  simpl.
+  unfold plus_assoc_def in IHn.
+  rewrite -> IHn.
+  reflexivity.
+Qed.
+
+Theorem plus_comm''' : forall n m, plus_comm_def n m.
+Proof.
+  intros.
+  unfold plus_comm_def.
+  induction n.
+  rewrite -> plus_0_r.
+  reflexivity.
+  simpl.
+  rewrite <- plus_n_Sm.
+  rewrite -> IHn.
+  reflexivity.
+Qed.
 (** [] *)
 
 (* ##################################################### *)
-(** One more quick digression, for adventurous souls: if we can define 
+(** One more quick digression, for adventurous souls: if we can define
     parameterized propositions using [Definition], then can we also
     define them using [Fixpoint]?  Of course we can!  However, this
     kind of "recursive parameterization" doesn't correspond to
@@ -1397,15 +1581,17 @@ Proof.
     [true_upto_n__true_everywhere] that makes
     [true_upto_n_example] work. *)
 
-(* 
-Fixpoint true_upto_n__true_everywhere 
-(* FILL IN HERE *)
+
+Fixpoint true_upto_n__true_everywhere (n : nat) (f : nat -> Prop) : Prop :=
+  match n with
+    | O => forall m : nat, f m
+    | S n' => f n -> true_upto_n__true_everywhere n' f
+  end.
 
 Example true_upto_n_example :
     (true_upto_n__true_everywhere 3 (fun n => even n))
   = (even 3 -> even 2 -> even 1 -> forall m : nat, even m).
 Proof. reflexivity.  Qed.
-*)
 (** [] *)
 
 (* ####################################################### *)
@@ -1473,14 +1659,77 @@ Definition b_16 : beautiful 16 :=
       of the list; just having a single constructor
     c : forall l, l = rev l -> pal l
       may seem obvious, but will not work very well.)
- 
-    - Prove that 
+
+    - Prove that
        forall l, pal (l ++ rev l).
-    - Prove that 
+    - Prove that
        forall l, pal l -> l = rev l.
 *)
 
-(* FILL IN HERE *)
+Inductive pal {X : Type} : list X -> Prop :=
+  | c : forall l, l = rev l -> pal l.
+
+Lemma app_assoc : forall (X : Type) (l1 l2 l3 : list X), (l1 ++ l2) ++ l3 = l1 ++ (l2 ++ l3).
+Proof.
+  intros.
+  induction l1.
+  reflexivity.
+  simpl.
+  rewrite -> IHl1.
+  reflexivity.
+Qed.
+
+Lemma rev_append : forall (X : Type) (l1 l2 : list X), rev (l1 ++ l2) = rev l2 ++ rev l1.
+Proof.
+  intros X l1.
+  induction l1.
+  simpl.
+  assert (forall (l : list X), l ++ [] = l).
+  induction l.
+  reflexivity.
+  simpl.
+  rewrite -> IHl.
+  reflexivity.
+  intros.
+  rewrite -> H.
+  reflexivity.
+  intros.
+  simpl.
+  rewrite -> IHl1.
+  rewrite -> snoc_append.
+  rewrite -> snoc_append.
+  rewrite -> app_assoc.
+  reflexivity.
+Qed.
+
+Goal forall X (l : list X), pal (l ++ rev l).
+Proof.
+  intros.
+  induction l.
+  simpl.
+  apply c.
+  reflexivity.
+  inversion IHl.
+  apply c.
+  simpl.
+  rewrite -> snoc_append.
+  rewrite -> snoc_append.
+  replace (rev (l ++ rev l ++ [x])) with (rev (rev l ++ [x]) ++ rev l).
+  rewrite -> rev_append.
+  rewrite -> rev_involutive.
+  simpl.
+  rewrite -> app_assoc.
+  reflexivity.
+  rewrite <- rev_append.
+  reflexivity.
+Qed.
+
+Goal forall X (l : list X), pal l -> l = rev l.
+Proof.
+  intros.
+  induction H.
+  apply H.
+Qed.
 (** [] *)
 
 (** **** Exercise: 5 stars, optional (palindrome_converse) *)
@@ -1488,8 +1737,18 @@ Definition b_16 : beautiful 16 :=
     that
      forall l, l = rev l -> pal l.
 *)
-
-(* FILL IN HERE *)
+(* miss? It is very easy in spite of 5 stars. *)
+Goal forall X (l : list X), l = rev l -> pal l.
+Proof.
+  intros X l.
+  apply c.
+Qed.
+Goal forall X (l : list X), pal l -> l = rev l.
+Proof.
+  intros.
+  induction H.
+  apply H.
+Qed.
 (** [] *)
 
 (** **** Exercise: 4 stars (subsequence) *)
@@ -1512,7 +1771,7 @@ Definition b_16 : beautiful 16 :=
       three cases.)
 
     - Prove that subsequence is reflexive, that is, any list is a
-      subsequence of itself.  
+      subsequence of itself.
 
     - Prove that for any lists [l1], [l2], and [l3], if [l1] is a
       subsequence of [l2], then [l1] is also a subsequence of [l2 ++
@@ -1524,9 +1783,61 @@ Definition b_16 : beautiful 16 :=
       induction carefully!
 *)
 
-(* FILL IN HERE *)
+Inductive subseq : list nat -> list nat -> Prop :=
+  | subseq_nil : forall l, subseq [] l
+  | subseq_cons2 : forall n l l', subseq l l' -> subseq l (n :: l')
+  | subseq_cons12 : forall n l l', subseq l l' -> subseq (n :: l) (n :: l').
+
+Theorem subseq_refl : forall l, subseq l l.
+Proof.
+  intros.
+  induction l.
+  apply subseq_nil.
+  apply subseq_cons12.
+  apply IHl.
+Qed.
+
+Theorem subseq_app : forall l1 l2 l3, subseq l1 l2 -> subseq l1 (l2 ++ l3).
+Proof.
+  intros.
+  induction H.
+  apply subseq_nil.
+  simpl.
+  apply subseq_cons2.
+  apply IHsubseq.
+  simpl.
+  apply subseq_cons12.
+  apply IHsubseq.
+Qed.
+
+Lemma subseq_cons1 : forall n l l', subseq (n :: l) l' -> subseq l l'.
+Proof.
+  induction l.
+  intros.
+  apply subseq_nil.
+  intros.
+  induction l'.
+  inversion H.
+Admitted.
+
+Theorem subseq_trans : forall l1 l2 l3, subseq l1 l2 -> subseq l2 l3 -> subseq l1 l3.
+Proof.
+  intros.
+  generalize dependent l3.
+  induction H.
+  intros.
+  apply subseq_nil.
+  intros.
+  apply IHsubseq.
+  apply subseq_cons1 in H0.
+  apply H0.
+  intros.
+  inversion H0.
+Admitted.
+(* NOT COMPLETE *)
 (** [] *)
 
+Module PropExercise.
 (** **** Exercise: 2 stars, optional (foo_ind_principle) *)
 (** Suppose we make the following inductive definition:
    Inductive foo (X : Set) (Y : Set) : Set :=
@@ -1534,15 +1845,19 @@ Definition b_16 : beautiful 16 :=
      | foo2 : Y -> foo X Y
      | foo3 : foo X Y -> foo X Y.
    Fill in the blanks to complete the induction principle that will be
-   generated by Coq. 
+   generated by Coq.
    foo_ind
-        : forall (X Y : Set) (P : foo X Y -> Prop),   
-          (forall x : X, __________________________________) ->
-          (forall y : Y, __________________________________) ->
-          (________________________________________________) ->
-           ________________________________________________
-
+        : forall (X Y : Set) (P : foo X Y -> Prop),
+          (forall x : X, P (foo1 X Y x)) ->
+          (forall y : Y, P (foo2 X Y y)) ->
+          (forall f : foo X Y, P f -> P (foo3 X Y f)) ->
+           forall f : foo X Y, P f.
 *)
+Inductive foo (X : Set) (Y : Set) : Set :=
+  | foo1 : X -> foo X Y
+  | foo2 : Y -> foo X Y
+  | foo3 : foo X Y -> foo X Y.
+Check foo_ind.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (bar_ind_principle) *)
@@ -1555,35 +1870,47 @@ Definition b_16 : beautiful 16 :=
           forall b : bar, P b
    Write out the corresponding inductive set definition.
    Inductive bar : Set :=
-     | bar1 : ________________________________________
-     | bar2 : ________________________________________
-     | bar3 : ________________________________________.
+     | bar1 : nat -> bar
+     | bar2 : bar -> bar
+     | bar3 : bool -> bar -> bar.
 
 *)
+Inductive bar : Set :=
+  | bar1 : nat -> bar
+  | bar2 : bar -> bar
+  | bar3 : bool -> bar -> bar.
+Check bar_ind.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (no_longer_than_ind) *)
 (** Given the following inductively defined proposition:
   Inductive no_longer_than (X : Set) : (list X) -> nat -> Prop :=
     | nlt_nil  : forall n, no_longer_than X [] n
-    | nlt_cons : forall x l n, no_longer_than X l n -> 
+    | nlt_cons : forall x l n, no_longer_than X l n ->
                                no_longer_than X (x::l) (S n)
-    | nlt_succ : forall l n, no_longer_than X l n -> 
+    | nlt_succ : forall l n, no_longer_than X l n ->
                              no_longer_than X l (S n).
   write the induction principle generated by Coq.
   no_longer_than_ind
        : forall (X : Set) (P : list X -> nat -> Prop),
-         (forall n : nat, ____________________) ->
+         (forall n : nat, P [] n) ->
          (forall (x : X) (l : list X) (n : nat),
-          no_longer_than X l n -> ____________________ -> 
-                                  _____________________________ ->
+          no_longer_than X l n -> P l n ->
+                                  P (x :: l) n ->
          (forall (l : list X) (n : nat),
-          no_longer_than X l n -> ____________________ -> 
-                                  _____________________________ ->
-         forall (l : list X) (n : nat), no_longer_than X l n -> 
-           ____________________
+          no_longer_than X l n -> P l n ->
+                                  P l (S n) ->
+         forall (l : list X) (n : nat), no_longer_than X l n ->
+           P l n
 
 *)
+Inductive no_longer_than (X : Set) : (list X) -> nat -> Prop :=
+  | nlt_nil  : forall n, no_longer_than X [] n
+  | nlt_cons : forall x l n, no_longer_than X l n ->
+                             no_longer_than X (x::l) (S n)
+  | nlt_succ : forall l n, no_longer_than X l n ->
+                           no_longer_than X l (S n).
+Check no_longer_than_ind.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (R_provability) *)
@@ -1597,8 +1924,32 @@ Definition b_16 : beautiful 16 :=
     - [R 2 [1,0]]
     - [R 1 [1,2,1,0]]
     - [R 6 [3,2,1,0]]
-*)
 
+[R 2 [1,0]], [R 1 [1,2,1,0]]
+*)
+Inductive R : nat -> list nat -> Prop :=
+  | c1 : R 0 []
+  | c2 : forall n l, R n l -> R (S n) (n :: l)
+  | c3 : forall n l, R (S n) l -> R n l.
+
+Goal R 2 [1,0].
+Proof.
+  apply c2.
+  apply c2.
+  apply c1.
+Qed.
+
+Goal R 1 [1,2,1,0].
+Proof.
+  apply c3.
+  apply c2.
+  apply c3.
+  apply c3.
+  apply c2.
+  apply c2.
+  apply c2.
+  apply c1.
+Qed.
 (** [] *)
 
 
@@ -1606,5 +1957,3 @@ Definition b_16 : beautiful 16 :=
 (* ##################################################### *)
 (* ##################################################### *)
 (* ##################################################### *)
-
-
