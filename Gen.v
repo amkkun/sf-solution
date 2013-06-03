@@ -19,7 +19,7 @@ Require Export Poly.
     different arguments to different results.  The way we _start_ this
     proof is a little bit delicate: if we begin it with
       intros n. induction n.
-]] 
+]]
     all is well.  But if we begin it with
       intros n m. induction n.
     we get stuck in the middle of the inductive case... *)
@@ -31,12 +31,12 @@ Proof.
   intros n m. induction n as [| n'].
   Case "n = O". simpl. intros eq. destruct m as [| m'].
     SCase "m = O". reflexivity.
-    SCase "m = S m'". inversion eq. 
+    SCase "m = S m'". inversion eq.
   Case "n = S n'". intros eq. destruct m as [| m'].
     SCase "m = O". inversion eq.
-    SCase "m = S m'". 
+    SCase "m = S m'".
       assert (n' = m') as H.
-      SSCase "Proof of assertion". 
+      SSCase "Proof of assertion".
       (* Here we are stuck.  We need the assertion in order to
          rewrite the final goal (subgoal 2 at this point) to an
          identity.  But the induction hypothesis, [IHn'], does
@@ -44,7 +44,7 @@ Proof.
          way -- so the assertion is not provable. *)
       Admitted.
 
-(** What went wrong?  
+(** What went wrong?
 
     The problem is that, at the point we invoke the induction
     hypothesis, we have already introduced [m] into the context
@@ -60,11 +60,11 @@ Proof.
 
     holds for all [n] by showing
 
-      - [P O]              
+      - [P O]
 
          (i.e., "if [double O = double m] then [O = m]")
 
-      - [P n -> P (S n)]  
+      - [P n -> P (S n)]
 
         (i.e., "if [double n = double m] then [n = m]" implies "if
         [double (S n) = double m] then [S n = m]").
@@ -109,8 +109,8 @@ Proof.
   intros n. induction n as [| n'].
   Case "n = O". simpl. intros m eq. destruct m as [| m'].
     SCase "m = O". reflexivity.
-    SCase "m = S m'". inversion eq. 
-  Case "n = S n'". 
+    SCase "m = S m'". inversion eq.
+  Case "n = S n'".
     (* Notice that both the goal and the induction
        hypothesis have changed: the goal asks us to prove
        something more general (i.e., to prove the
@@ -124,7 +124,7 @@ Proof.
        analysis on [m] to keep the two "in sync." *)
     destruct m as [| m'].
     SCase "m = O". inversion eq.  (* The 0 case is trivial *)
-    SCase "m = S m'". 
+    SCase "m = S m'".
       (* At this point, since we are in the second
          branch of the [destruct m], the [m'] mentioned
          in the context at this point is actually the
@@ -158,12 +158,12 @@ Proof.
   intros n m. induction m as [| m'].
   Case "m = O". simpl. intros eq. destruct n as [| n'].
     SCase "n = O". reflexivity.
-    SCase "n = S n'". inversion eq. 
+    SCase "n = S n'". inversion eq.
   Case "m = S m'". intros eq. destruct n as [| n'].
     SCase "n = O". inversion eq.
-    SCase "n = S n'". 
+    SCase "n = S n'".
       assert (n' = m') as H.
-      SSCase "Proof of assertion". 
+      SSCase "Proof of assertion".
         (* Here we are stuck again, just like before. *)
 Admitted.
 
@@ -189,7 +189,7 @@ Theorem double_injective_take2 : forall n m,
      double n = double m ->
      n = m.
 Proof.
-  intros n m. 
+  intros n m.
   (* [n] and [m] are both in the context *)
   generalize dependent n.
   (* Now [n] is back in the goal and we can do induction on
@@ -200,9 +200,9 @@ Proof.
     SCase "n = S n'". inversion eq.
   Case "m = S m'". intros n eq. destruct n as [| n'].
     SCase "n = O". inversion eq.
-    SCase "n = S n'". 
+    SCase "n = S n'".
       assert (n' = m') as H.
-      SSCase "Proof of assertion". 
+      SSCase "Proof of assertion".
         apply IHm'. inversion eq. reflexivity.
       rewrite -> H. reflexivity.  Qed.
 
@@ -231,7 +231,7 @@ _Proof_: Let [m] be a [nat]. We prove by induction on [m] that, for
     that [double n = double m].  We must show that [n = S m'], with
     the induction hypothesis that for every number [s], if [double s =
     double m'] then [s = m'].
- 
+
     By the fact that [m = S m'] and the definition of [double], we
     have [double n = S (S (double m'))].  There are two cases to
     consider for [n].
@@ -254,7 +254,25 @@ Theorem plus_n_n_injective_take2 : forall n m,
      n + n = m + m ->
      n = m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m.
+  generalize dependent n.
+  induction m.
+  intros.
+  induction n.
+  reflexivity.
+  inversion H.
+
+  intros.
+  induction n.
+  inversion H.
+  inversion H.
+  rewrite <- plus_n_Sm in H1.
+  rewrite <- plus_n_Sm in H1.
+  inversion H1.
+  apply IHm in H2.
+  rewrite -> H2.
+  reflexivity.
+Qed.
 
 (** Now prove this by induction on [l]. *)
 
@@ -262,41 +280,86 @@ Theorem index_after_last: forall (n : nat) (X : Type) (l : list X),
      length l = n ->
      index (S n) l = None.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n X l.
+  generalize dependent n.
+  induction l.
+  intros.
+  reflexivity.
+
+  intros.
+  simpl.
+  rewrite <- H.
+  simpl.
+  apply IHl.
+  reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (index_after_last_informal) *)
 (** Write an informal proof corresponding to your Coq proof
     of [index_after_last]:
- 
+
      _Theorem_: For all sets [X], lists [l : list X], and numbers
       [n], if [length l = n] then [index (S n) l = None].
- 
+
      _Proof_:
      (* FILL IN HERE *)
+(* OMIT *)
 []
 *)
 
 (** **** Exercise: 3 stars (gen_dep_practice_opt) *)
 (** Prove this by induction on [l]. *)
 
-Theorem length_snoc''' : forall (n : nat) (X : Type) 
+Theorem length_snoc''' : forall (n : nat) (X : Type)
                               (v : X) (l : list X),
      length l = n ->
-     length (snoc l v) = S n. 
+     length (snoc l v) = S n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n X v l.
+  generalize dependent n.
+  induction l.
+  intros.
+  simpl.
+  induction n.
+  reflexivity.
+  inversion H.
+
+  intros.
+  simpl.
+  rewrite <- H.
+  simpl.
+  f_equal.
+  apply IHl.
+  reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars (app_length_cons) *)
 (** Prove this by induction on [l1], without using [app_length]. *)
 
-Theorem app_length_cons : forall (X : Type) (l1 l2 : list X) 
+Theorem app_length_cons : forall (X : Type) (l1 l2 : list X)
                                   (x : X) (n : nat),
      length (l1 ++ (x :: l2)) = n ->
      S (length (l1 ++ l2)) = n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction l1.
+  intros.
+  simpl.
+  simpl in H.
+  apply H.
+
+  intros.
+  simpl.
+  simpl in H.
+
+  induction n.
+  inversion H.
+  f_equal.
+  apply IHl1 with x0.
+  inversion H.
+  reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 4 stars, optional (app_length_twice) *)
@@ -306,5 +369,35 @@ Theorem app_length_twice : forall (X:Type) (n:nat) (l:list X),
      length l = n ->
      length (l ++ l) = n + n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X n l.
+  generalize dependent n.
+  induction l.
+  intros.
+  simpl.
+  induction n.
+  reflexivity.
+  inversion H.
+  intros.
+  simpl.
+  induction n.
+  inversion H.
+  simpl in H.
+  inversion H.
+  simpl.
+
+  rewrite <- plus_n_Sm.
+  assert (forall (l1 l2 : list X) (x : X), length (l1 ++ x :: l2) = S (length (l1 ++ l2))).
+  intros.
+  induction l1.
+  reflexivity.
+  simpl.
+  rewrite -> IHl1.
+  reflexivity.
+
+  rewrite -> H0.
+  f_equal.
+  f_equal.
+  apply IHl.
+  reflexivity.
+Qed.
 (** [] *)
