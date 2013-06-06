@@ -1720,9 +1720,10 @@ Theorem O_le_n : forall n,
 Proof.
   intros.
   induction n.
-  apply le_n.
-  apply le_S.
-  apply IHn.
+    apply le_n.
+
+    apply le_S.
+    apply IHn.
 Qed.
 
 Theorem n_le_m__Sn_le_Sm : forall n m,
@@ -1730,36 +1731,40 @@ Theorem n_le_m__Sn_le_Sm : forall n m,
 Proof.
   intros.
   induction H.
-  apply le_n.
-  apply le_S.
-  apply IHle.
+    apply le_n.
+
+    apply le_S.
+    apply IHle.
 Qed.
 
 Theorem Sn_le_Sm__n_le_m : forall n m,
   S n <= S m -> n <= m.
 Proof.
   intros n m.  generalize dependent n.  induction m.
-  intros.
-  inversion H.
-  apply le_n.
-  inversion H1.
-  intros.
-  inversion H.
-  apply le_n.
-  apply le_S.
-  apply IHm.
-  apply H1.
+    intros.
+    inversion H.
+      apply le_n.
+
+      inversion H1.
+    intros.
+    inversion H.
+      apply le_n.
+
+      apply le_S.
+      apply IHm.
+      apply H1.
 Qed.
 
 Theorem le_plus_l : forall a b,
   a <= a + b.
 Proof.
   induction a.
-  apply O_le_n.
-  intros.
-  simpl.
-  apply n_le_m__Sn_le_Sm.
-  apply IHa.
+    apply O_le_n.
+
+    intros.
+    simpl.
+    apply n_le_m__Sn_le_Sm.
+    apply IHa.
 Qed.
 
 Theorem plus_lt : forall n1 n2 m,
@@ -1769,20 +1774,21 @@ Proof.
   unfold lt.
   intros.
   induction H.
-  split.
-  apply n_le_m__Sn_le_Sm.
-  apply le_plus_l.
-  apply n_le_m__Sn_le_Sm.
-  rewrite plus_comm.
-  apply le_plus_l.
+    split.
+      apply n_le_m__Sn_le_Sm.
+      apply le_plus_l.
 
-  split.
-  inversion IHle.
-  apply le_S.
-  apply H0.
-  inversion IHle.
-  apply le_S.
-  apply H1.
+      apply n_le_m__Sn_le_Sm.
+      rewrite plus_comm.
+      apply le_plus_l.
+    split.
+      inversion IHle.
+      apply le_S.
+      apply H0.
+
+      inversion IHle.
+      apply le_S.
+      apply H1.
 Qed.
 
 Theorem lt_S : forall n m,
@@ -1792,25 +1798,28 @@ Proof.
   unfold lt.
   intros.
   induction H.
-  apply le_S.
-  apply le_n.
-  apply le_S.
-  apply IHle.
+    apply le_S.
+    apply le_n.
+
+    apply le_S.
+    apply IHle.
 Qed.
 
 Theorem ble_nat_true : forall n m,
   ble_nat n m = true -> n <= m.
 Proof.
   induction n.
-  intros.
-  apply O_le_n.
-  intros.
-  destruct m.
-  inversion H.
-  simpl in H.
-  apply n_le_m__Sn_le_Sm.
-  apply IHn.
-  apply H.
+    intros.
+    apply O_le_n.
+
+    intros.
+    destruct m.
+      inversion H.
+
+      simpl in H.
+      apply n_le_m__Sn_le_Sm.
+      apply IHn.
+      apply H.
 Qed.
 
 Theorem ble_nat_n_Sn_false : forall n m,
@@ -1818,15 +1827,17 @@ Theorem ble_nat_n_Sn_false : forall n m,
   ble_nat n m = false.
 Proof.
   induction n.
-  intros.
-  inversion H.
-  intros.
-  simpl in H.
-  destruct m.
-  reflexivity.
-  simpl.
-  apply IHn.
-  apply H.
+    intros.
+    inversion H.
+
+    intros.
+    simpl in H.
+    destruct m.
+      reflexivity.
+
+      simpl.
+      apply IHn.
+      apply H.
 Qed.
 
 Theorem ble_nat_false : forall n m,
@@ -1834,21 +1845,23 @@ Theorem ble_nat_false : forall n m,
 Proof.
   (* Hint: Do the right induction! *)
   induction n.
-  intros.
-  inversion H.
-  intros.
-  destruct m.
-  unfold not.
-  intro.
-  inversion H0.
-  simpl in H.
-  unfold not.
-  intros.
-  apply Sn_le_Sm__n_le_m in H0.
-  unfold not in IHn.
-  generalize H0.
-  apply IHn.
-  apply H.
+    intros.
+    inversion H.
+
+    intros.
+    destruct m.
+      unfold not.
+      intro.
+      inversion H0.
+
+      simpl in H.
+      unfold not.
+      intros.
+      apply Sn_le_Sm__n_le_m in H0.
+      unfold not in IHn.
+      generalize H0.
+      apply IHn.
+      apply H.
 Qed.
 (** [] *)
 
@@ -1918,11 +1931,12 @@ Lemma app_length : forall {X:Type} (l1 l2 : list X),
   length (l1 ++ l2) = length l1 + length l2.
 Proof.
   induction l1.
-  reflexivity.
-  intros.
-  simpl.
-  rewrite IHl1.
-  reflexivity.
+    reflexivity.
+
+    intros.
+    simpl.
+    rewrite IHl1.
+    reflexivity.
 Qed.
 
 Lemma appears_in_app_split : forall {X:Type} (x:X) (l:list X),
@@ -1930,20 +1944,21 @@ Lemma appears_in_app_split : forall {X:Type} (x:X) (l:list X),
   exists l1, exists l2, l = l1 ++ (x::l2).
 Proof.
   induction l.
-  intros.
-  inversion H.
-  intros.
-  induction H.
-  exists [].
-  exists l0.
-  reflexivity.
+    intros.
+    inversion H.
 
-  inversion IHappears_in.
-  inversion H0.
-  rewrite H1.
-  exists (b :: witness).
-  exists witness0.
-  reflexivity.
+    intros.
+    induction H.
+      exists [].
+      exists l0.
+      reflexivity.
+
+      inversion IHappears_in.
+      inversion H0.
+      rewrite H1.
+      exists (b :: witness).
+      exists witness0.
+      reflexivity.
 Qed.
 
 (** Now define a predicate [repeats] (analogous to [no_repeats] in the
@@ -1964,30 +1979,31 @@ Lemma lt_irrefl : forall n, ~ n < n.
 Proof.
   unfold lt.
   induction n.
-  intro.
-  inversion H.
-  intro.
-  destruct IHn.
-  apply Sn_le_Sm__n_le_m.
-  apply H.
+    intro.
+    inversion H.
+
+    intro.
+    destruct IHn.
+    apply Sn_le_Sm__n_le_m.
+    apply H.
 Qed.
 
 Lemma lt_not_le: forall n m : nat, n < m -> ~ m <= n.
 Proof.
   intros.
   induction H.
-  apply lt_irrefl.
+    apply lt_irrefl.
 
-  intro.
-  destruct IHle.
-  inversion H0.
-  apply le_S.
-  apply le_n.
+    intro.
+    destruct IHle.
+    inversion H0.
+      apply le_S.
+      apply le_n.
 
-  rewrite <- H2 in H0.
-  apply le_S.
-  apply Sn_le_Sm__n_le_m.
-  apply H0.
+      rewrite <- H2 in H0.
+      apply le_S.
+      apply Sn_le_Sm__n_le_m.
+      apply H0.
 Qed.
 
 Lemma not_repeats_repeats_here : forall {X} (x y : X) l,
@@ -1995,15 +2011,16 @@ Lemma not_repeats_repeats_here : forall {X} (x y : X) l,
 Proof.
   intros.
   destruct (H (repeats l)).
-  apply (repeats_later y l) in H2.
-  induction H0.
-  apply H2.
+    apply (repeats_later y l) in H2.
+    induction H0.
+    apply H2.
 
-  inversion H1.
-  subst.
-  inversion H4.
-  reflexivity.
-  subst.
+    inversion H1.
+      subst.
+      inversion H4.
+        reflexivity.
+
+        subst.
 Admitted.
 
 Theorem pigeonhole_principle: forall {X:Type} (l1 l2:list X),
@@ -2109,7 +2126,10 @@ Proof.  intros X l1. induction l1.
           None].
 
           This follows immediately from the definition of index.
+*)
+Print index.
 
+(*
         - Suppose [l = x :: l'] for some [x] and [l'], where
           [length l' = n'] implies [index (S n') l' = None], for
           any number [n'].  We must show, for all [n], that, if
@@ -2173,6 +2193,16 @@ Proof.  intros X l1. induction l1.
 
              But then, by [le_S], [n <= S o'].  [] *)
 
+Print le.
+
+Theorem induction_on_a_derivation_example : forall n m o, n <= m -> m <= o -> n <= o.
+Proof.
+  intros.
+  induction H0.
+    exact H.
+    apply le_S in IHle.
+    exact IHle.
+Qed.
 (* ##################################################### *)
 (** * Optional Material *)
 
@@ -2198,6 +2228,8 @@ Check and_ind.
 Check or_ind.
 (** [] *)
 
+Check and_ind.
+
 (** From the inductive definition of the proposition [and P Q]
      Inductive and (P Q : Prop) : Prop :=
        conj : P -> Q -> (and P Q).
@@ -2211,6 +2243,8 @@ Check or_ind.
        forall P Q P0 : Prop,
             (P -> Q -> P0) ->
             P /\ Q -> P0
+
+
     In the same way, when given the inductive definition of [or P Q]
      Inductive or (P Q : Prop) : Prop :=
        | or_introl : P -> or P Q
@@ -2262,6 +2296,7 @@ Check or'_ind.
    automatically too...  *)
 
 Print nat_ind.
+Print nat_rect.
 (* ===> (after some manual tidying)
    nat_ind =
     fun (P : nat -> Type)
@@ -2273,6 +2308,18 @@ Print nat_ind.
             | S n0 => f0 n0 (F n0)
             end.
 *)
+
+Definition nat_ind' :=
+  fun (P : nat -> Type)
+      (f : P 0)
+      (f0 : forall n : nat, P n -> P (S n)) =>
+        fix F (n : nat) : P n :=
+          match n with
+            | 0 => f
+            | S n0 => f0 n0 (F n0)
+          end.
+
+Print nat_ind'.
 
 (** We can read this as follows:
      Suppose we have evidence [f] that [P] holds on 0,  and
@@ -2372,11 +2419,35 @@ Qed.
     patterns belonging to the inductive type being matched over and
     all arms of the [match] return the same type, and so on.
 
+append : forall (X : Type), list X -> list X -> list X
+length : forall (X : Type), list X -> nat
+
+Definition invalid_app {X : Type} : list X -> list X :=
+  fun (l : list X) => append l (length l).
+
+Definition invlid_pred (n : nat) : option nat :=
+  match n with
+    | Nil => None
+    | O => None
+    | S n' => n'
+  end.
+
     There are a few additional wrinkles:
 
     - Since Coq types can themselves be expressions, the checker must
       normalize these (by using the conversion rules) before
       comparing them.
+*)
+
+Definition return_nat : Type -> Type :=
+  fun _ => nat.
+
+Definition return_nat_succ {X : Type} (n : return_nat (list X)) : nat :=
+  S n.
+
+Check return_nat_succ.
+
+(*
 
     - The checker must make sure that [match] expressions are
       _exhaustive_.  That is, there must be an arm for every possible
