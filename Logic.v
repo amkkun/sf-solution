@@ -1133,6 +1133,9 @@ Check eq'_ind.
 Definition four : 2 + 2 = 1 + 3 :=
   refl_equal nat 4.
 
+Definition five : 2 + 3 = 1 + 4 :=
+  refl_equal nat 5.
+
 Definition singleton : forall (X:Set) (x:X), []++[x] = x::[]  :=
   fun (X:Set) (x:X) => refl_equal (list X) [x].
 
@@ -1189,6 +1192,25 @@ End MyEquality.
    some extra information: it tells us that the two arguments to [eq]
    must be the same!  The [inversion] tactic adds this fact to the
    context.  *)
+
+Goal forall (P Q : Prop), P \/ Q -> Q \/ P.
+Proof.
+  intros.
+  inversion H.
+  Show 2.
+Admitted.
+
+Goal forall (P Q : Prop), P /\ Q -> P.
+Proof.
+  intros.
+  inversion H.
+Admitted.
+
+Goal forall (n m : nat), S n = S m -> n = m.
+Proof.
+  intros.
+  inversion H.
+Admitted.
 
 (* ####################################################### *)
 (** * Relations as Propositions *)
@@ -1797,12 +1819,8 @@ Theorem lt_S : forall n m,
 Proof.
   unfold lt.
   intros.
-  induction H.
-    apply le_S.
-    apply le_n.
-
-    apply le_S.
-    apply IHle.
+  apply le_S.
+  apply H.
 Qed.
 
 Theorem ble_nat_true : forall n m,
@@ -1881,7 +1899,7 @@ Qed.
 Inductive nostutter : list nat -> Prop :=
   | nostutter_nil : nostutter []
   | nostutter_one : forall n, nostutter [n]
-  | nostutter_cons : forall n m l, beq_nat n m = false -> nostutter (n :: l) -> nostutter (m :: n :: l).
+  | nostutter_cons : forall n m l, n <> m -> nostutter (n :: l) -> nostutter (m :: n :: l).
 
 Inductive nostutter' : list nat -> Prop :=
   | nostutter_nil' : nostutter' []
@@ -1913,8 +1931,7 @@ Proof. intro.
   repeat match goal with
     h: nostutter _ |- _ => inversion h; clear h; subst
   end.
-  (* contradiction H1; auto. Qed. *)
-  inversion H1. Qed.
+  contradiction H1; auto. Qed.
 (** [] *)
 
 (** **** Exercise: 4 stars, optional (pigeonhole principle) *)
